@@ -17,4 +17,9 @@ class Task extends Model
         'color',       // Warna tugas
         'user_id',     // ID user terkait
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

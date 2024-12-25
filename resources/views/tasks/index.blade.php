@@ -1,4 +1,22 @@
 <x-app-layout title="Tasks">
+    @if (session('success'))
+        <div id="alert" class="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg z-50">
+            <strong>Success!</strong> {{ session('success') }}
+        </div>
+    @endif
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const alert = document.getElementById('alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.opacity = '0'; // Ubah transparansi menjadi 0
+                    setTimeout(() => alert.remove(), 500); // Hapus elemen setelah animasi selesai
+                }, 3000); // 5 detik sebelum menghilang
+            }
+        });
+    </script>
+
     <div class="container mx-auto px-4 py-6">
         <!-- Greet -->
         <div class="flex justify-between items-center bg-gray-900 border border-gray-700 p-6 mb-6 rounded-lg relative">
@@ -6,7 +24,15 @@
                 <img src="{{ asset('storage/' . (Auth::user()->profile_picture ?? 'profile_pictures/default.jpg')) }}"
                     class="w-10 h-10 rounded-full ring-2 ring-indigo-500"
                     alt="User">
-                <span class="text-white text-xl font-bold">{{ Auth::user()->name }}</span>
+                <span class="text-white text-xl font-bold">{{ Auth::user()->name }}
+                    @if (Auth::user()->is_premium)
+                        <!-- Tampilkan badge di halaman profil -->
+                        <span class="mt-2 ml-3 inline-block px-3 py-1 text-sm font-semibold text-yellow-500 bg-yellow-100 rounded-full">
+                            <i class="fa-solid fa-crown"></i>
+                        </span>
+                    @endif
+
+                </span>
             </div>
             <button class="text-white text-2xl">
                 <i class="fas fa-bell"></i>
@@ -99,6 +125,10 @@
                         Add Task
                     </button>
                 </div>
+
+                @if (session('error'))
+                    <div class="text-red-500">{{ session('error') }}</div>
+                @endif
             </form>
         </div>
 

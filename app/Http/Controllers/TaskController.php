@@ -42,23 +42,25 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $user = Auth::user();
+
+        // Hitung jumlah tugas user saat ini
+        $taskCount = $user->tasks()->count();
+
+        // Periksa jika user belum premium dan sudah melebihi batas
+        if (!$user->is_premium && $taskCount >= 10) {
+            return back()->with('error', 'Upgrade to premium to add more tasks!');
+        }
+
+        // Lanjutkan menyimpan tugas jika belum mencapai batas
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'color' => 'nullable|string|max:7', // Hex color code
-            'due_date' => 'nullable|date|after_or_equal:today', // Validasi due date, jika ada
+            'status' => 'nullable|boolean',
         ]);
 
-        Task::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'color' => $request->color ?? '#ffffff',
-            'due_date' => $request->due_date, // Menambahkan due_date ke database
-            'completed' => false,
-            'user_id' => Auth::id(),
-        ]);
+        $user->tasks()->create($validatedData);
 
-        return redirect()->route('tasks.index')->with('success', 'Task created successfully!');
+        return redirect()->route('tasks.index')->with('success', 'Task added successfully!');
     }
 
     public function update(Request $request, Task $task)
@@ -98,4 +100,14 @@ class TaskController extends Controller
 
         return redirect()->route('tasks.index')->with('success', 'Task status updated.');
     }
+
+    public function upgradeToPremium()
+    {
+        $user = Auth::user();
+        $user->is_premium = true;
+        $user->save();
+
+        return redirect()->route('tasks.index')->with('success', 'You are now a premium user!');
+    }
+
 }

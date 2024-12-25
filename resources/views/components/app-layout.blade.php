@@ -29,6 +29,12 @@
                 <!-- Navigation -->
                 <div class="flex items-center space-x-6">
                     @auth
+                        @unless (Auth::user()->is_premium)
+                            <form method="POST" action="{{ route('upgrade.premium') }}">
+                                @csrf
+                                <button class="px-4 py-2 bg-yellow-500 text-white rounded">Upgrade to Premium</button>
+                            </form>
+                        @endunless
                         <div class="flex items-center space-x-4">
                             <form method="POST" action="{{ route('logout') }}" class="flex items-center">
                                 @csrf

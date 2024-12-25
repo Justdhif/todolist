@@ -15,12 +15,8 @@ use App\Http\Controllers\TaskController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::middleware('web')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
 
@@ -37,5 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::delete('/tasks/delete-all', [TaskController::class, 'deleteAll'])->name('tasks.deleteAll');
     Route::patch('/tasks/{task}/toggle', [TaskController::class, 'toggleStatus'])->name('tasks.toggleStatus');
+    Route::post('/upgrade-to-premium', [TaskController::class, 'upgradeToPremium'])->name('upgrade.premium');
+
 });
 
